@@ -16,7 +16,7 @@ suites:
   - name: default
     run_list: duo-openvpn-build::default
     attributes:
-      okta_openvpn_build:
+      duo_openvpn_build:
         version: <%= DuoOpenvpnBuild::Helpers.version %>
         revision: <%= DuoOpenvpnBuild::Helpers.revision %>
         packagecloud_token: <%= ENV['PACKAGECLOUD_TOKEN'] || 'test' %>

@@ -10,8 +10,10 @@ describe 'duo-openvpn::app' do
   end
 
   %w(
-    /etc/openvpn/duo_openvpn.ini
+    /usr/lib/openvpn/plugins/duo_openvpn/ca_certs.pem
+    /usr/lib/openvpn/plugins/duo_openvpn/https_wrapper.py
     /usr/lib/openvpn/plugins/duo_openvpn.py
+    /usr/lib/openvpn/plugins/duo_openvpn.so
   ).each do |f|
     describe file(f) do
       it 'exists' do
