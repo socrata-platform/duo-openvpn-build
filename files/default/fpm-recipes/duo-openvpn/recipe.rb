@@ -47,7 +47,7 @@ class DuoOpenvpn < FPM::Cookery::Recipe
   end
 
   platforms [:redhat, :centos, :scientific] do
-    build_depends build_deps
+    build_depends build_deps + %w(rpm-build)
     depends deps
   end
 

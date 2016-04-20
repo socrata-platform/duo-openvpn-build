@@ -14,3 +14,6 @@ issues_url 'https://github.com/socrata-platform/duo-openvpn-build/issues'
 depends 'build-essential'
 
 supports 'ubuntu'
+supports 'redhat'
+supports 'centos'
+supports 'scientific'
