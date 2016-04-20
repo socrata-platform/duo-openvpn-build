@@ -1,0 +1,19 @@
+language: ruby
+sudo: required
+dist: trusty
+services:
+  - docker
+
+branches:
+  only:
+    - master
+
+install:
+  - wget -qO- https://www.chef.io/chef/install.sh | sudo bash -s -- -P chefdk
+  - chef exec bundle install
+
+before_script:
+  - cp .kitchen.travis.yml .kitchen.local.yml
+
+script:
+  - chef exec rake && chef exec kitchen test

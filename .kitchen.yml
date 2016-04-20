@@ -1,0 +1,23 @@
+<%
+require_relative 'libraries/helpers'
+DuoOpenvpnBuild::Helpers.configure!(token: ENV['PACKAGECLOUD_TOKEN'])
+%>
+
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: ubuntu-14.04
+
+suites:
+  - name: default
+    run_list: duo-openvpn-build::default
+    attributes:
+      okta_openvpn_build:
+        version: <%= DuoOpenvpnBuild::Helpers.version %>
+        revision: <%= DuoOpenvpnBuild::Helpers.revision %>
+        packagecloud_token: <%= ENV['PACKAGECLOUD_TOKEN'] || 'test' %>
+        publish_artifacts: <%= ENV['TRAVIS_PULL_REQUEST'] == 'false' ? true : false %>
