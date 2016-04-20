@@ -8,7 +8,7 @@ Duo-OpenVPN Build Project
 
 A project for packaging the Duo OpenVPN plugin.
 
-This project currently builds packages for Ubuntu 14.04 only.
+This project currently builds packages for Ubuntu 16.04/14.04 only.
 
 Requirements
 ------------
