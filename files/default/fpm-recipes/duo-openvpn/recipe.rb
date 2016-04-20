@@ -51,10 +51,58 @@ class DuoOpenvpn < FPM::Cookery::Recipe
     depends deps
   end
 
+  # A set of patches of the structure:
+  #
+  #   {
+  #     'file_to_patch' => {
+  #       'string_to_patch' => 'replacement_string'
+  #     }
+  #   }
+  #
+  REPLACE_PATCHES = {
+    'Makefile' => {
+      '/opt/duo' => '/usr',
+      'duo_openvpn.py https_wrapper.py -m 755 $(DESTDIR)$(PREFIX)' =>
+        "duo_openvpn.py -m 755 $(DESTDIR)$(PREFIX)/lib/openvpn/plugins\n\t" \
+          'install -c https_wrapper.py -m 755 $(DESTDIR)$(PREFIX)/lib/' \
+          'openvpn/plugins/duo_openvpn'
+    },
+    'duo_openvpn.py' => {
+      'from https_wrapper import CertValidatingHTTPSConnection' =>
+        'from duo_openvpn import https_wrapper',
+      'conn = CertValidatingHTTPSConnection(' =>
+        'conn = https_wrapper.CertValidatingHTTPSConnection('
+    }
+  }.freeze
+
+  #
+  # A set of patches of the structure:
+  #
+  #   {
+  #     'file_to_patch' => {
+  #       'string_to_patch' => 'patch_to_append_to_string'
+  #     }
+  #   }
+  #
+  APPEND_PATCHES = {
+    'Makefile' => {
+      'mkdir -p $(DESTDIR)$(PREFIX)' => '/lib/openvpn/plugins/duo_openvpn',
+      'duo_openvpn.so -m 755 $(DESTDIR)$(PREFIX)' => '/lib/openvpn/plugins',
+      'ca_certs.pem -m 644 $(DESTDIR)$(PREFIX)' =>
+        '/lib/openvpn/plugins/duo_openvpn'
+    }
+  }.freeze
+
   #
   # Compile the plugin.
   #
   def build
+    REPLACE_PATCHES.each do |f, patches|
+      inline_replace(f) { |s| patches.each { |k, v| s.gsub!(k, v) } }
+    end
+    APPEND_PATCHES.each do |f, patches|
+      inline_replace(f) { |s| patches.each { |k, v| s.gsub!(k, "#{k}#{v}") } }
+    end
     make
   end
 
@@ -63,5 +111,10 @@ class DuoOpenvpn < FPM::Cookery::Recipe
   #
   def install
     make :install, DESTDIR: destdir
+    f = File.open("#{destdir}/usr/lib/openvpn/plugins/duo_openvpn/__init__.py",
+                  'w')
+    f.write("__version__ = \"#{version}\"")
+    f.close
+    safesystem("python -m compileall #{destdir}/usr/lib/openvpn/plugins")
   end
 end
