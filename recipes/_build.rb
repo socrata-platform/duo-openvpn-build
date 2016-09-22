@@ -23,9 +23,10 @@ package 'duo-openvpn' do
 end
 
 apt_update 'default' if node['platform_family'] == 'debian'
+include_recipe 'yum-epel' if node['platform_family'] == 'rhel'
 include_recipe 'build-essential'
 
-deps = %w(git python)
+deps = %w(git python openvpn)
 deps += %w(rpm-build) if node['platform_family'] == 'rhel'
 deps.each { |d| package d }
 

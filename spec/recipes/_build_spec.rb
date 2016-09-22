@@ -23,7 +23,7 @@ describe 'duo-openvpn-build::_build' do
       expect(chef_run).to include_recipe('build-essential')
     end
 
-    %w(git python).each do |p|
+    %w(git python openvpn).each do |p|
       it "installs #{p}" do
         expect(chef_run).to install_package(p)
       end
@@ -58,9 +58,17 @@ describe 'duo-openvpn-build::_build' do
     it 'ensures the APT cache is refreshed' do
       expect(chef_run).to periodic_apt_update('default')
     end
+
+    it 'does not try to configure EPEL' do
+      expect(chef_run).to_not include_recipe('yum-epel')
+    end
   end
 
   shared_examples_for 'a CentOS platform' do
+    it 'configures EPEL' do
+      expect(chef_run).to include_recipe('yum-epel')
+    end
+
     it 'does not run the APT recipe' do
       expect(chef_run).to_not include_recipe('apt')
     end

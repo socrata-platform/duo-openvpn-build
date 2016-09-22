@@ -39,14 +39,14 @@ class DuoOpenvpn < FPM::Cookery::Recipe
   license 'Apache, version 2.0'
 
   build_deps = %w(git python)
-  deps = %w(python)
+  deps = %w(python openvpn)
 
-  platforms [:debian, :ubuntu] do
+  platforms %i(debian ubuntu) do
     build_depends build_deps
     depends deps
   end
 
-  platforms [:redhat, :centos, :scientific] do
+  platforms %i(redhat centos scientific) do
     build_depends build_deps + %w(rpm-build)
     depends deps
   end
