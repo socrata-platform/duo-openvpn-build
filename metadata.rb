@@ -12,6 +12,7 @@ source_url 'https://github.com/socrata-platform/duo-openvpn-build'
 issues_url 'https://github.com/socrata-platform/duo-openvpn-build/issues'
 
 depends 'build-essential'
+depends 'yum-epel', '~> 1.0'
 
 supports 'ubuntu'
 supports 'redhat'
