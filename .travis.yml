@@ -9,7 +9,7 @@ branches:
     - master
 
 install:
-  - wget -qO- https://www.chef.io/chef/install.sh | sudo bash -s -- -P chefdk
+  - wget -qO- https://www.chef.io/chef/install.sh | sudo bash -s -- -P chefdk -c current
   - chef exec bundle install
 
 before_script:
