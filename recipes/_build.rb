@@ -25,6 +25,10 @@ end
 apt_update 'default' if node['platform_family'] == 'debian'
 include_recipe 'build-essential'
 
+deps = %w(git python)
+deps += %w(rpm-build) if node['platform_family'] == 'rhel'
+deps.each { |d| package d }
+
 chef_gem 'fpm-cookery' do
   compile_time false
 end

@@ -8,8 +8,8 @@ describe 'duo-openvpn-build::_build' do
   let(:platform) { nil }
   let(:runner) do
     ChefSpec::SoloRunner.new(platform) do |node|
-      node.set['duo_openvpn_build']['version'] = version
-      node.set['duo_openvpn_build']['revision'] = revision
+      node.normal['duo_openvpn_build']['version'] = version
+      node.normal['duo_openvpn_build']['revision'] = revision
     end
   end
   let(:converge) { runner.converge(described_recipe) }
@@ -21,6 +21,12 @@ describe 'duo-openvpn-build::_build' do
 
     it 'includes build-essential' do
       expect(chef_run).to include_recipe('build-essential')
+    end
+
+    %w(git python).each do |p|
+      it "installs #{p}" do
+        expect(chef_run).to install_package(p)
+      end
     end
 
     it 'installs FPM Cookery' do
@@ -57,6 +63,10 @@ describe 'duo-openvpn-build::_build' do
   shared_examples_for 'a CentOS platform' do
     it 'does not run the APT recipe' do
       expect(chef_run).to_not include_recipe('apt')
+    end
+
+    it 'installs rpm-build' do
+      expect(chef_run).to install_package('rpm-build')
     end
   end
 
