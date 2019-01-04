@@ -3,18 +3,6 @@ require_relative 'libraries/helpers'
 DuoOpenvpnBuild::Helpers.configure!(token: ENV['PACKAGECLOUD_TOKEN'])
 %>
 
-driver:
-  name: vagrant
-
-provisioner:
-  name: chef_zero
-
-platforms:
-  - name: ubuntu-18.04
-  - name: ubuntu-16.04
-  - name: ubuntu-14.04
-  - name: centos-7.2
-
 suites:
   - name: default
     run_list: duo-openvpn-build::default

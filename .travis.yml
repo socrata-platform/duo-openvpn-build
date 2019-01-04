@@ -1,19 +1,32 @@
+dist: xenial
 language: ruby
-sudo: required
-dist: trusty
-services:
-  - docker
+rvm: system
 
 branches:
   only:
     - master
 
+sudo: required
+
 install:
-  - wget -qO- https://www.chef.io/chef/install.sh | sudo bash -s -- -P chefdk -c current
+  - curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P chefdk
   - chef exec bundle install
 
-before_script:
-  - cp .kitchen.travis.yml .kitchen.local.yml
+env:
+  - SUITE=default PLATFORM=ubuntu
+  - SUITE=default PLATFORM=centos
 
-script:
-  - chef exec rake && chef exec kitchen test
+script: chef exec microwave test $SUITE-$PLATFORM
+
+# The name "test" is special in Travis, so we have to call it that, even though
+# it'd be more accurately named "integration_test_and_deploy".
+stages:
+  - name: unit
+  - name: test
+    if: NOT type = cron AND branch = master
+
+jobs:
+  include:
+    - stage: unit
+      env:
+      script: chef exec rake

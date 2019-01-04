@@ -32,8 +32,8 @@ when 'rhel'
   end
 end
 
-remote_directory File.expand_path('/tmp/spec')
+remote_directory '/tmp/spec'
 
 execute '/opt/chef/embedded/bin/rspec */*_spec.rb -f d' do
-  cwd File.expand_path('/tmp/spec')
+  cwd '/tmp/spec'
 end
