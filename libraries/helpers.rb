@@ -39,8 +39,8 @@ module DuoOpenvpnBuild
       #   * token - A PackageCloud API token (required for some functions)
       #   * node - A Chef node object with platform info (will be grabbed
       #     from Ohai if not provided)
-      #   * version - The version of the package to build (will be generated
-      #     based on the current repo contents if not provided)
+      #   * version - The version of the package to build (will be pulled from
+      #     the project's GitHub repo if not provided)
       #   * revision - The revision of the package to build (will be generated
       #     based on the current repo contents if not provided)
       #
@@ -97,55 +97,67 @@ module DuoOpenvpnBuild
       #
       #   * Return 1 if there's also no PackageCloud API token
       #   * Return 1 if this version doesn't exist in PackageCloud yet
-      #   * Return n + 1 where n is the most recent release if this version
-      #     already exists in PackageCloud
+      #   * Return n + 1 where n is the most recent release
       #
       # @return [Fixnum] a revision number
       #
       def revision
-        @revision ||= if token.nil? || relevant_packages.empty?
-                        1
-                      else
-                        relevant_packages.map do |p|
-                          p['release'].to_i
-                        end.max + 1
-                      end
+        @revision ||= begin
+          if token.nil? || packages.nil? || packages.empty?
+            1
+          else
+            packages.max_by { |p| p['release'] }['release'].to_i + 1
+          end
+        end
       end
 
       #
-      # Return the list of packages that match the desired version.
-      #
-      # @return [Array<Hash>] a list of packages
-      #
-      def relevant_packages
-        packages.select { |p| p['version'] == version }
-      end
-
-      #
-      # If no version has yet been configured, choose one. The plugin's source
-      # is not versioned, so base a new version off what's currently in
-      # PackageCloud. Return 0.1.0 if there is no token configured or the repo
-      # is empty.
-      #
-      # @return [String] a version string
-      #
-      def version
-        @version ||= if token.nil? || Array(packages).empty?
-                       '0.1.0'
-                     else
-                       packages.map do |p|
-                         Gem::Version.new(p['version'])
-                       end.max.bump.to_s << '.0'
-                     end
-      end
-
-      #
-      # Return a list of packages in PackageCloud.
+      # Return a list of packages in PackageCloud that match the desired version
+      # number.
       #
       # @return [Array<Hash>] an array of packages
       #
       def packages
-        @packages ||= client.list_packages('duo-openvpn').response
+        @packages ||= begin
+          client.list_packages('duo-openvpn').response.select do |p|
+            p['version'] == version
+          end
+        end
+      end
+
+      #
+      # Return the source URL of a tarball of the most recent version of the
+      # Duo plugin, determined based on the latest GitHub tag's tarball URL.
+      #
+      # @return [String] a download URL
+      #
+      def source_url
+        @source_url ||= tag['tarball_url']
+      end
+
+      #
+      # If no version has yet been configured, find the most recent release in
+      # in the project's GitHub repo.
+      #
+      # @return [String] a version string
+      #
+      def version
+        @version ||= tag['name']
+      end
+
+      #
+      # Hit the GitHub API and find the most recent tagged version of the Duo
+      # plugin, returning the hash representation of that tag. Save the tag
+      # in a class variable so there's no race condition when a new version
+      # is released while a build is running.
+      #
+      # @return [Hash] the properties for the latest tag
+      #
+      def tag
+        @tag ||= JSON.parse(
+          Net::HTTP.get(URI('https://api.github.com/repos/duosecurity/' \
+                            'duo_openvpn/tags'))
+        ).first
       end
 
       #

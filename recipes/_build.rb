@@ -38,7 +38,7 @@ remote_directory '/tmp/fpm-recipes'
 bash 'Run the FPM cook' do
   cwd '/tmp/fpm-recipes/duo-openvpn'
   environment(
-    'BUILD_VERSION' => node['duo_openvpn_build']['version'],
+    'BUILD_VERSION' => node['duo_openvpn_build']['version'].to_s,
     'BUILD_REVISION' => node['duo_openvpn_build']['revision'].to_s
   )
   code <<-CODE.gsub(/^ {4}/, '')

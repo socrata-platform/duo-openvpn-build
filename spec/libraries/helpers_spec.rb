@@ -145,13 +145,12 @@ describe DuoOpenvpnBuild::Helpers do
   end
 
   describe '.revision' do
+    let(:packages) { [] }
     let(:token) { nil }
-    let(:relevant_packages) { [] }
-    let(:version) { '1.2.3' }
 
     before(:each) do
       described_class.configure!
-      %i[token relevant_packages version].each do |i|
+      %i[token packages].each do |i|
         allow(described_class).to receive(i).and_return(send(i))
       end
     end
@@ -166,7 +165,7 @@ describe DuoOpenvpnBuild::Helpers do
 
     context 'an empty list of packages' do
       let(:token) { 'token' }
-      let(:relevant_packages) { [] }
+      let(:packages) { [] }
 
       it 'returns 1' do
         expect(described_class.revision).to eq(1)
@@ -175,7 +174,7 @@ describe DuoOpenvpnBuild::Helpers do
 
     context 'a populated list of packages' do
       let(:token) { 'token' }
-      let(:relevant_packages) do
+      let(:packages) do
         [
           { 'version' => '1.2.3', 'release' => '1' },
           { 'version' => '1.2.3', 'release' => '2' },
@@ -185,95 +184,6 @@ describe DuoOpenvpnBuild::Helpers do
 
       it 'returns 1 greater than the current revision' do
         expect(described_class.revision).to eq(4)
-      end
-    end
-  end
-
-  describe '.relevant_packages' do
-    let(:packages) { [] }
-    let(:version) { '1.2.3' }
-
-    before(:each) do
-      described_class.configure!
-      %i[packages version].each do |i|
-        allow(described_class).to receive(i).and_return(send(i))
-      end
-    end
-
-    context 'an empty list of packages' do
-      let(:packages) { [] }
-
-      it 'returns an empty array' do
-        expect(described_class.relevant_packages).to eq([])
-      end
-    end
-
-    context 'a populated list of packages' do
-      let(:packages) do
-        [
-          { 'version' => '0.1.2', 'release' => '6' },
-          { 'version' => '1.2.3', 'release' => '1' },
-          { 'version' => '1.2.3', 'release' => '2' },
-          { 'version' => '1.2.3', 'release' => '3' },
-          { 'version' => '4.5.6', 'release' => '7' }
-        ]
-      end
-
-      it 'returns the subset of packages that match our version' do
-        expected = [
-          { 'version' => '1.2.3', 'release' => '1' },
-          { 'version' => '1.2.3', 'release' => '2' },
-          { 'version' => '1.2.3', 'release' => '3' }
-        ]
-        expect(described_class.relevant_packages).to eq(expected)
-      end
-    end
-  end
-
-  describe '.version' do
-    let(:token) { 'abc123' }
-    let(:packages) do
-      [
-        { 'version' => '4.3.2', 'release' => '3' },
-        { 'version' => '1.0.0', 'release' => '4' },
-        { 'version' => '9.3.6', 'release' => '1' },
-        { 'version' => '3.3.7', 'release' => '2' }
-      ]
-    end
-
-    before(:each) do
-      described_class.configure!
-      allow(described_class).to receive(:token).and_return(token)
-      allow(described_class).to receive(:packages).and_return(packages)
-    end
-
-    context 'a configured token and populated package list' do
-      it 'returns the next minor version' do
-        expect(described_class.version).to eq('9.4.0')
-      end
-    end
-
-    context 'no configured PackageCloud token' do
-      let(:token) { nil }
-
-      it 'returns 0.1.0' do
-        expect(described_class.version).to eq('0.1.0')
-      end
-    end
-
-    context 'a nil list of packages' do
-      let(:packages) { nil }
-
-      it 'returns 0.1.0' do
-        expect(described_class.version).to eq('0.1.0')
-      end
-    end
-
-    context 'an empty list of packages' do
-      let(:packages) { [] }
-
-      it 'returns 0.1.0' do
-        expect(described_class.version).to eq('0.1.0')
       end
     end
   end
@@ -296,8 +206,50 @@ describe DuoOpenvpnBuild::Helpers do
       end
     end
 
-    it 'returns the package list' do
-      expect(described_class.packages).to eq(packages)
+    it 'returns the packages that match the most recent version' do
+      expected = [
+        { 'version' => '1.2.3', 'release' => '1' },
+        { 'version' => '1.2.3', 'release' => '2' }
+      ]
+      expect(described_class.packages).to eq(expected)
+    end
+  end
+
+  describe '.source_url' do
+    let(:tag) { { 'thing' => 'stuff', 'tarball_url' => 'http://example.com' } }
+
+    before(:each) do
+      allow(described_class).to receive(:tag).and_return(tag)
+    end
+
+    it 'returns the tarball URL from the GitHub tag' do
+      expect(described_class.source_url).to eq('http://example.com')
+    end
+  end
+
+  describe '.version' do
+    let(:tag) { { 'thing' => 'stuff', 'name' => '1.2.3' } }
+
+    before(:each) do
+      allow(described_class).to receive(:tag).and_return(tag)
+    end
+
+    it 'returns the version string from the GitHub tag' do
+      expect(described_class.version).to eq('1.2.3')
+    end
+  end
+
+  describe '.tag' do
+    let(:data) { '["thing1", "thing2"]' }
+
+    before(:each) do
+      allow(Net::HTTP).to receive(:get).with(
+        URI('https://api.github.com/repos/duosecurity/duo_openvpn/tags')
+      ).and_return(data)
+    end
+
+    it 'returns the first tag from the GitHub API' do
+      expect(described_class.tag).to eq('thing1')
     end
   end
 
