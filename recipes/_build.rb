@@ -1,9 +1,10 @@
-# Encoding: UTF-8
+# frozen_string_literal: true
+
 #
 # Cookbook Name:: duo-openvpn-build
 # Recipe:: _build
 #
-# Copyright 2016, Socrata, Inc.
+# Copyright 2016, Tyler Technologies
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,17 +23,15 @@ package 'duo-openvpn' do
   action :remove
 end
 
-apt_update 'default' if node['platform_family'] == 'debian'
-include_recipe 'yum-epel' if node['platform_family'] == 'rhel'
-include_recipe 'build-essential'
+apt_update 'default' if platform_family?('debian')
+include_recipe 'yum-epel' if platform_family?('rhel')
+build_essential
 
-deps = %w(git python openvpn)
-deps += %w(rpm-build) if node['platform_family'] == 'rhel'
+deps = %w[git python openvpn]
+deps += %w[rpm-build] if platform_family?('rhel')
 deps.each { |d| package d }
 
-chef_gem 'fpm-cookery' do
-  compile_time false
-end
+chef_gem 'fpm-cookery'
 
 remote_directory '/tmp/fpm-recipes'
 
@@ -42,9 +41,9 @@ bash 'Run the FPM cook' do
     'BUILD_VERSION' => node['duo_openvpn_build']['version'],
     'BUILD_REVISION' => node['duo_openvpn_build']['revision'].to_s
   )
-  code <<-EOH.gsub(/^ {4}/, '')
+  code <<-CODE.gsub(/^ {4}/, '')
     BIN=/opt/chef/embedded/bin/fpm-cook
     $BIN clean
     $BIN package
-  EOH
+  CODE
 end

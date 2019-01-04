@@ -1,8 +1,9 @@
-# Encoding: UTF-8
+# frozen_string_literal: true
+
 #
 # FPM Recipe:: duo-openvpn
 #
-# Copyright 2016, Socrata, Inc.
+# Copyright 2016, Tyler Technologies
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +23,7 @@ require 'fpm/cookery/recipe'
 
 # A FPM Cookery recipe for the Duo-OpenVPN plugin
 #
-# @author Jonathan Hartman <jonathan.hartman@socrata.com>
+# @author Jonathan Hartman <jonathan.hartman@tylertech.com>
 class DuoOpenvpn < FPM::Cookery::Recipe
   name 'duo-openvpn'
 
@@ -33,21 +34,21 @@ class DuoOpenvpn < FPM::Cookery::Recipe
   homepage 'https://github.com/duosecurity/duo_openvpn'
   source 'https://github.com/duosecurity/duo_openvpn', with: :git
 
-  maintainer 'Jonathan Hartman <jonathan.hartman@socrata.com>'
-  vendor 'Socrata, Inc.'
+  maintainer 'Jonathan Hartman <jonathan.hartman@tylertech.com>'
+  vendor 'Tyler Technologies'
 
   license 'Apache, version 2.0'
 
-  build_deps = %w(git python)
-  deps = %w(python openvpn)
+  build_deps = %w[git python]
+  deps = %w[python openvpn]
 
-  platforms %i(debian ubuntu) do
+  platforms %i[debian ubuntu] do
     build_depends build_deps
     depends deps
   end
 
-  platforms %i(redhat centos scientific) do
-    build_depends build_deps + %w(rpm-build)
+  platforms %i[redhat centos scientific] do
+    build_depends build_deps + %w[rpm-build]
     depends deps
   end
 

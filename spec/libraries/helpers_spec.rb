@@ -1,4 +1,4 @@
-# Encoding: UTF-8
+# frozen_string_literal: true
 
 require 'packagecloud'
 require_relative '../spec_helper'
@@ -39,7 +39,7 @@ describe DuoOpenvpnBuild::Helpers do
       allow(described_class).to receive(:package_file).and_return(package_file)
       allow(described_class).to receive(:distro_id).and_return(distro_id)
       allow(Packagecloud::Package).to receive(:new).with(file: package_file)
-        .and_return(package)
+                                                   .and_return(package)
       allow(described_class).to receive(:client).and_return(client)
     end
 
@@ -52,12 +52,12 @@ describe DuoOpenvpnBuild::Helpers do
 
   describe '.package_file' do
     let(:platform) { nil }
-    let(:node) { Fauxhai.mock(platform).data }
+    let(:node) { Fauxhai.mock(platform: platform).data }
     let(:version) { '1.2.3' }
     let(:revision) { 4 }
 
     before(:each) do
-      %i(version revision node).each do |m|
+      %i[version revision node].each do |m|
         allow(described_class).to receive(m).and_return(send(m))
       end
     end
@@ -78,26 +78,26 @@ describe DuoOpenvpnBuild::Helpers do
       end
     end
 
-    context 'Ubuntu 14.04' do
-      let(:platform) { { platform: 'ubuntu', version: '14.04' } }
+    context 'Ubuntu' do
+      let(:platform) { 'ubuntu' }
 
       it_behaves_like 'a debian platform'
     end
 
-    context 'Debian 8.2' do
-      let(:platform) { { platform: 'debian', version: '8.2' } }
+    context 'Debian' do
+      let(:platform) { 'debian' }
 
       it_behaves_like 'a debian platform'
     end
 
-    context 'RHEL 7.1' do
-      let(:platform) { { platform: 'redhat', version: '7.1' } }
+    context 'RHEL' do
+      let(:platform) { 'redhat' }
 
       it_behaves_like 'a rhel platform'
     end
 
-    context 'CentOS 7.0' do
-      let(:platform) { { platform: 'centos', version: '7.0' } }
+    context 'CentOS' do
+      let(:platform) { 'centos' }
 
       it_behaves_like 'a rhel platform'
     end
@@ -111,32 +111,32 @@ describe DuoOpenvpnBuild::Helpers do
       allow(described_class).to receive(:node).and_return(node)
     end
 
-    context 'Ubuntu 14.04' do
-      let(:platform) { { platform: 'ubuntu', version: '14.04' } }
+    context 'Ubuntu 18.04' do
+      let(:platform) { { platform: 'ubuntu', version: '18.04' } }
 
       it 'returns the correct distro ID' do
-        expect(described_class.distro_id).to eq('ubuntu/trusty')
+        expect(described_class.distro_id).to eq('ubuntu/bionic')
       end
     end
 
-    context 'Debian 8.2' do
-      let(:platform) { { platform: 'debian', version: '8.2' } }
+    context 'Debian 9' do
+      let(:platform) { { platform: 'debian', version: '9' } }
 
       it 'returns the correct distro ID' do
-        expect(described_class.distro_id).to eq('debian/jessie')
+        expect(described_class.distro_id).to eq('debian/stretch')
       end
     end
 
-    context 'RHEL 7.1' do
-      let(:platform) { { platform: 'redhat', version: '7.1' } }
+    context 'RHEL 7' do
+      let(:platform) { { platform: 'redhat', version: '7' } }
 
       it 'returns the correct distro ID' do
         expect(described_class.distro_id).to eq('el/7')
       end
     end
 
-    context 'CentOS 7.0' do
-      let(:platform) { { platform: 'centos', version: '7.0' } }
+    context 'CentOS 7' do
+      let(:platform) { { platform: 'centos', version: '7' } }
 
       it 'returns the correct distro ID' do
         expect(described_class.distro_id).to eq('el/7')
@@ -151,7 +151,7 @@ describe DuoOpenvpnBuild::Helpers do
 
     before(:each) do
       described_class.configure!
-      %i(token relevant_packages version).each do |i|
+      %i[token relevant_packages version].each do |i|
         allow(described_class).to receive(i).and_return(send(i))
       end
     end
@@ -195,7 +195,7 @@ describe DuoOpenvpnBuild::Helpers do
 
     before(:each) do
       described_class.configure!
-      %i(packages version).each do |i|
+      %i[packages version].each do |i|
         allow(described_class).to receive(i).and_return(send(i))
       end
     end
@@ -291,7 +291,7 @@ describe DuoOpenvpnBuild::Helpers do
     let(:version) { '1.2.3' }
 
     before(:each) do
-      %i(client version).each do |i|
+      %i[client version].each do |i|
         allow(described_class).to receive(i).and_return(send(i))
       end
     end
@@ -324,7 +324,7 @@ describe DuoOpenvpnBuild::Helpers do
       allow(Packagecloud::Credentials).to receive(:new)
         .with('socrata-platform', token).and_return(credentials)
       allow(Packagecloud::Client).to receive(:new).with(credentials)
-        .and_return(client)
+                                                  .and_return(client)
     end
 
     it 'returns a PackageCloud client object' do

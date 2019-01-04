@@ -1,9 +1,10 @@
-# Encoding: UTF-8
+# frozen_string_literal: true
+
 #
 # Cookbook Name:: duo-openvpn-build
 # Recipe:: _deploy
 #
-# Copyright 2016, Socrata, Inc.
+# Copyright 2016, Tyler Technologies
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,9 +19,7 @@
 # limitations under the License.
 #
 
-chef_gem 'packagecloud-ruby' do
-  compile_time false
-end
+chef_gem 'packagecloud-ruby'
 
 ruby_block 'Push artifacts to PackageCloud' do
   block do

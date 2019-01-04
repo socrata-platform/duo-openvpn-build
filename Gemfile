@@ -1,17 +1,16 @@
-# Encoding: UTF-8
+# frozen_string_literal: true
 
 source 'https://rubygems.org'
 
 group :test do
-  gem 'rake'
-  gem 'rubocop'
-  gem 'foodcritic'
-  gem 'rspec'
   gem 'chefspec'
+  gem 'fauxhai'
+  gem 'foodcritic'
+  gem 'rake'
+  gem 'rspec'
+  gem 'rubocop'
   gem 'simplecov'
   gem 'simplecov-console'
-  gem 'coveralls'
-  gem 'fauxhai'
 end
 
 group :integration do
@@ -19,11 +18,11 @@ group :integration do
 end
 
 group :build do
-  gem 'fpm-cookery'
-  gem 'packagecloud-ruby', '~> 1.0'
-  gem 'chef', '>= 12.9'
   gem 'berkshelf'
-  gem 'test-kitchen'
-  gem 'kitchen-vagrant'
+  gem 'chef', '>= 14.0'
+  gem 'fpm-cookery'
   gem 'kitchen-docker'
+  gem 'kitchen-vagrant'
+  gem 'packagecloud-ruby', '~> 1.0'
+  gem 'test-kitchen'
 end

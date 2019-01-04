@@ -1,9 +1,10 @@
-# Encoding: UTF-8
+# frozen_string_literal: true
+
 #
 # Cookbook Name:: duo-openvpn-build
 # Recipe:: default
 #
-# Copyright 2016, Socrata, Inc.
+# Copyright 2016, Tyler Technologies
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,6 +26,6 @@ DuoOpenvpnBuild::Helpers.configure!(
   revision: node['duo_openvpn_build']['revision']
 )
 
-include_recipe "#{cookbook_name}::_build"
-include_recipe "#{cookbook_name}::_verify"
-include_recipe "#{cookbook_name}::_deploy"
+include_recipe '::_build'
+include_recipe '::_verify'
+include_recipe '::_deploy'

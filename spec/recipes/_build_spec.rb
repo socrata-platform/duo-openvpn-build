@@ -1,96 +1,54 @@
-# Encoding: UTF-8
+# frozen_string_literal: true
 
 require_relative '../spec_helper'
 
 describe 'duo-openvpn-build::_build' do
-  let(:version) { '1.2.3' }
-  let(:revision) { 3 }
-  let(:platform) { nil }
-  let(:runner) do
-    ChefSpec::SoloRunner.new(platform) do |node|
-      node.normal['duo_openvpn_build']['version'] = version
-      node.normal['duo_openvpn_build']['revision'] = revision
-    end
-  end
-  let(:converge) { runner.converge(described_recipe) }
+  default_attributes['duo_openvpn_build']['version'] = '1.2.3'
+  default_attributes['duo_openvpn_build']['revision'] = 3
 
   shared_examples_for 'any platform' do
-    it 'removes any currently installed duo-openvpn package' do
-      expect(chef_run).to remove_package('duo-openvpn')
+    it { is_expected.to remove_package('duo-openvpn') }
+    it { is_expected.to install_build_essential('') }
+
+    %w[git python openvpn].each do |p|
+      it { is_expected.to install_package(p) }
     end
 
-    it 'includes build-essential' do
-      expect(chef_run).to include_recipe('build-essential')
-    end
+    it { is_expected.to install_chef_gem('fpm-cookery') }
+    it { is_expected.to create_remote_directory('/tmp/fpm-recipes') }
 
-    %w(git python openvpn).each do |p|
-      it "installs #{p}" do
-        expect(chef_run).to install_package(p)
-      end
-    end
-
-    it 'installs FPM Cookery' do
-      expect(chef_run).to install_chef_gem('fpm-cookery')
-        .with(compile_time: false)
-    end
-
-    it 'syncs the FPM Cookery project directory' do
-      expect(chef_run).to create_remote_directory('/tmp/fpm-recipes')
-    end
-
-    it 'runs fpm-cook' do
-      expect(chef_run).to run_bash('Run the FPM cook').with(
+    it do
+      is_expected.to run_bash('Run the FPM cook').with(
         cwd: '/tmp/fpm-recipes/duo-openvpn',
         environment: {
           'BUILD_VERSION' => '1.2.3',
           'BUILD_REVISION' => '3'
         },
-        code: <<-EOH.gsub(/^ {10}/, '')
+        code: <<-CODE.gsub(/^ {10}/, '')
           BIN=/opt/chef/embedded/bin/fpm-cook
           $BIN clean
           $BIN package
-        EOH
+        CODE
       )
     end
   end
 
-  shared_examples_for 'a Ubuntu platform' do
-    it 'ensures the APT cache is refreshed' do
-      expect(chef_run).to periodic_apt_update('default')
-    end
-
-    it 'does not try to configure EPEL' do
-      expect(chef_run).to_not include_recipe('yum-epel')
-    end
-  end
-
-  shared_examples_for 'a CentOS platform' do
-    it 'configures EPEL' do
-      expect(chef_run).to include_recipe('yum-epel')
-    end
-
-    it 'does not run the APT recipe' do
-      expect(chef_run).to_not include_recipe('apt')
-    end
-
-    it 'installs rpm-build' do
-      expect(chef_run).to install_package('rpm-build')
-    end
-  end
-
-  context 'Ubuntu 14.04' do
-    let(:platform) { { platform: 'ubuntu', version: '14.04' } }
-    cached(:chef_run) { converge }
+  context 'a Ubuntu platform' do
+    platform 'ubuntu'
 
     it_behaves_like 'any platform'
-    it_behaves_like 'a Ubuntu platform'
+
+    it { is_expected.to periodic_apt_update('default') }
+    it { is_expected.to_not include_recipe('yum-epel') }
   end
 
-  context 'CentOS 7.0' do
-    let(:platform) { { platform: 'centos', version: '7.0' } }
-    cached(:chef_run) { converge }
+  context 'a CentOS platform' do
+    platform 'centos'
 
     it_behaves_like 'any platform'
-    it_behaves_like 'a CentOS platform'
+
+    it { is_expected.to include_recipe('yum-epel') }
+    it { is_expected.to_not periodic_apt_update('default') }
+    it { is_expected.to install_package('rpm-build') }
   end
 end

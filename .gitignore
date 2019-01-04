@@ -17,6 +17,8 @@ Gemfile.lock
 bin/*
 .bundle/*
 
+.rubocop-http*
+
 .kitchen/
 .kitchen.local.yml
 
