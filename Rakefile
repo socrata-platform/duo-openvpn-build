@@ -1,4 +1,4 @@
-# Encoding: UTF-8
+# frozen_string_literal: true
 
 require 'rubygems'
 require 'bundler/setup'
@@ -10,11 +10,11 @@ require 'kitchen/rake_tasks'
 RuboCop::RakeTask.new
 
 FoodCritic::Rake::LintTask.new do |f|
-  f.options = { fail_tags: %w(any) }
+  f.options = { fail_tags: %w[any] }
 end
 
 RSpec::Core::RakeTask.new(:spec)
 
 Kitchen::RakeTasks.new
 
-task default: %w(rubocop foodcritic spec)
+task default: %w[rubocop foodcritic spec]

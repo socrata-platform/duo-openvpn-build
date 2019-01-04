@@ -1,9 +1,10 @@
-# Encoding: UTF-8
+# frozen_string_literal: true
+
 #
 # Cookbook Name:: duo-openvpn-build
 # Recipe:: _verify
 #
-# Copyright 2016, Socrata, Inc.
+# Copyright 2016, Tyler Technologies
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,9 +19,7 @@
 # limitations under the License.
 #
 
-chef_gem 'serverspec' do
-  compile_time false
-end
+chef_gem 'serverspec'
 
 case node['platform_family']
 when 'debian'
@@ -33,8 +32,8 @@ when 'rhel'
   end
 end
 
-remote_directory File.expand_path('/tmp/spec')
+remote_directory '/tmp/spec'
 
 execute '/opt/chef/embedded/bin/rspec */*_spec.rb -f d' do
-  cwd File.expand_path('/tmp/spec')
+  cwd '/tmp/spec'
 end

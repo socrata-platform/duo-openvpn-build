@@ -1,9 +1,10 @@
-# Encoding: UTF-8
+# frozen_string_literal: true
+
 #
 # Cookbook Name:: duo-openvpn-build
 # Library:: helpers
 #
-# Copyright 2016, Socrata, Inc.
+# Copyright 2016, Tyler Technologies
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +27,7 @@ module DuoOpenvpnBuild
   # Helper methods that are shared, to be used in both the individual builder
   # servers as well as the central instance coordinating them.
   #
-  # @author Jonathan Hartman <jonathan.hartman@socrata.com>
+  # @author Jonathan Hartman <jonathan.hartman@tylertech.com>
   class Helpers
     class << self
       attr_reader :token
@@ -107,7 +108,7 @@ module DuoOpenvpnBuild
                       else
                         relevant_packages.map do |p|
                           p['release'].to_i
-                        end.sort.last + 1
+                        end.max + 1
                       end
       end
 
@@ -134,7 +135,7 @@ module DuoOpenvpnBuild
                      else
                        packages.map do |p|
                          Gem::Version.new(p['version'])
-                       end.sort.last.bump.to_s << '.0'
+                       end.max.bump.to_s << '.0'
                      end
       end
 

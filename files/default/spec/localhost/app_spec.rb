@@ -1,4 +1,4 @@
-# Encoding: UTF-8
+# frozen_string_literal: true
 
 require_relative '../spec_helper'
 
@@ -9,12 +9,12 @@ describe 'duo-openvpn::app' do
     end
   end
 
-  %w(
+  %w[
     /usr/lib/openvpn/plugins/duo/ca_certs.pem
     /usr/lib/openvpn/plugins/duo/https_wrapper.py
     /usr/lib/openvpn/plugins/duo/duo_openvpn.py
     /usr/lib/openvpn/plugins/duo/duo_openvpn.so
-  ).each do |f|
+  ].each do |f|
     describe file(f) do
       it 'exists' do
         expect(subject).to be_file

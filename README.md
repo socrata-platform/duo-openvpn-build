@@ -1,14 +1,12 @@
 Duo-OpenVPN Build Project
 =========================
 [![Build Status](https://img.shields.io/travis/socrata-platform/duo-openvpn-build.svg)][travis]
-[![Coverage Status](https://img.shields.io/coveralls/socrata-platform/duo-openvpn-build.svg)][coveralls]
 
 [travis]: https://travis-ci.org/socrata-platform/duo-openvpn-build
-[coveralls]: https://coveralls.io/r/socrata-platform/duo-openvpn-build
 
 A project for packaging the Duo OpenVPN plugin.
 
-This project currently builds packages for Ubuntu 16.04/14.04 and
+This project currently builds packages for Ubuntu 18.04/16.04/14.04 and
 RHEL/CentOS/Scientific/etc. 7.
 
 Requirements
@@ -78,9 +76,9 @@ Pull requests are welcome!
 
 License & Authors
 =================
-- Author: Jonathan Hartman <jonathan.hartman@socrata.com>
+- Author: Jonathan Hartman <jonathan.hartman@tylertech.com>
 
-Copyright 2016, Socrata, Inc.
+Copyright 2016, Tyler Technologies
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
