@@ -25,3 +25,4 @@ jobs:
   include:
     - stage: unit
       script: chef exec rake
+    - stage: test
