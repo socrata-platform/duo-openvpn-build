@@ -12,11 +12,7 @@ install:
   - curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P chefdk
   - chef exec bundle install
 
-env:
-  - SUITE=default PLATFORM=ubuntu
-  - SUITE=default PLATFORM=centos
-
-script: chef exec microwave test $SUITE-$PLATFORM
+script: chef exec microwave test
 
 # The name "test" is special in Travis, so we have to call it that, even though
 # it'd be more accurately named "integration_test_and_deploy".
@@ -28,5 +24,4 @@ stages:
 jobs:
   include:
     - stage: unit
-      env:
       script: chef exec rake
