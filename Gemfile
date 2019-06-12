@@ -19,7 +19,7 @@ end
 
 group :build do
   gem 'berkshelf'
-  gem 'chef', '>= 14.0'
+  gem 'chef', '~> 14.0'
   gem 'fpm-cookery'
   gem 'kitchen-microwave'
   gem 'packagecloud-ruby', '~> 1.0'
