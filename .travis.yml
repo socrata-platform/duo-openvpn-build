@@ -8,7 +8,7 @@ branches:
 sudo: required
 
 install:
-  - curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P chefdk
+  - curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P chefdk -v 3
   - chef exec bundle install
 
 script: chef exec microwave test
